@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from envs import env
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,6 +28,29 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTHENTICATION_BACKENDS = [
+    'djwarrant.backend.CognitoBackend',
+    'django.contrib.auth.backends.ModelBackend'
+]
+
+# COGNITO_TEST_USERNAME = env('COGNITO_TEST_USERNAME')
+
+# COGNITO_TEST_PASSWORD = env('COGNITO_TEST_PASSWORD')
+
+COGNITO_USER_POOL_ID = 'us-east-1_iEH4RmqcS' # env('COGNITO_USER_POOL_ID')
+
+COGNITO_APP_ID = 'qvbbd49703jjk2i9rq5p4fi8l' # env('COGNITO_APP_ID')
+
+COGNITO_ATTR_MAPPING = env(
+    'COGNITO_ATTR_MAPPING',
+    {
+        'email': 'email',
+        'given_name': 'first_name',
+        'family_name': 'last_name',
+        'custom:api_key': 'api_key',
+        'custom:api_key_id': 'api_key_id'
+    },
+    var_type='dict')
 
 # Application definition
 
@@ -37,6 +61,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djwarrant',
+    'crispy_forms',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -66,6 +93,8 @@ TEMPLATES = [
         },
     },
 ]
+
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
 WSGI_APPLICATION = 'webapp.wsgi.application'
 
@@ -99,6 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_REDIRECT_URL = '/accounts/profile'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -118,3 +148,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
