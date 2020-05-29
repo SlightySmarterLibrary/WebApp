@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 from envs import env
+import boto3
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,10 +38,6 @@ AUTHENTICATION_BACKENDS = [
 
 # COGNITO_TEST_PASSWORD = env('COGNITO_TEST_PASSWORD')
 
-COGNITO_USER_POOL_ID = 'us-east-1_iEH4RmqcS' # env('COGNITO_USER_POOL_ID')
-
-COGNITO_APP_ID = 'qvbbd49703jjk2i9rq5p4fi8l' # env('COGNITO_APP_ID')
-
 COGNITO_ATTR_MAPPING = env(
     'COGNITO_ATTR_MAPPING',
     {
@@ -63,7 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'djwarrant',
     'crispy_forms',
-    'django_extensions'
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -81,7 +78,9 @@ ROOT_URLCONF = 'webapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'library/templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -150,3 +149,34 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+AWS_ACCESS_KEY_ID = 'ASIAT6STUTTCKF62F4O3'
+AWS_SECRET_ACCESS_KEY = '2bQzkdeQycyBy04NnJFGaCu3E52hlKl7T07KQ8AT'
+AWS_USER_POOL_REGION = 'us-east-1'
+COGNITO_NAME = 'smartlibrary'
+
+cognito = boto3.client('cognito-idp', region_name=AWS_USER_POOL_REGION)
+
+# Load the UserPool ID for the smart library.
+for user_pool in cognito.list_user_pools(MaxResults=5)['UserPools']:
+    if user_pool['Name'] == 'smart-library':
+        user_pool_id = user_pool['Id']
+        break
+
+# Load UserPool Clients.
+for client in cognito.list_user_pool_clients(UserPoolId=user_pool_id, MaxResults=10)['UserPoolClients']:
+    if client['ClientName'] == COGNITO_NAME:
+        user_client_id = client['ClientId']
+
+# Load IdentifyPoolId for the Smart Library
+cognito_identity = boto3.client(
+    'cognito-identity', region_name=AWS_USER_POOL_REGION)
+
+for pool in cognito_identity.list_identity_pools(MaxResults=10)['IdentityPools']:
+    if pool['IdentityPoolName'] == COGNITO_NAME:
+        identity_pool_id = pool['IdentityPoolId']
+        break
+
+COGNITO_IDENTITY_POOL = identity_pool_id
+COGNITO_USER_POOL_ID = user_pool_id
+COGNITO_APP_ID = user_client_id
