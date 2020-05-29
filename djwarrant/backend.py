@@ -72,7 +72,7 @@ class AbstractCognitoBackend(ModelBackend):
             settings.COGNITO_APP_ID,
             access_key=getattr(settings, 'AWS_ACCESS_KEY_ID', None),
             secret_key=getattr(settings, 'AWS_SECRET_ACCESS_KEY', None),
-            user_pool_region=getattr(settings, 'AWS_USER_POOL_REGION', None),
+            user_pool_region=getattr(settings, 'AWS_REGION', None),
             username=username)
         try:
             cognito_user.authenticate(password)
@@ -130,7 +130,7 @@ class CognitoBackend(AbstractCognitoBackend):
             settings.COGNITO_APP_ID,
             access_key=getattr(settings, 'AWS_ACCESS_KEY_ID', None),
             secret_key=getattr(settings, 'AWS_SECRET_ACCESS_KEY', None),
-            user_pool_region=getattr(settings, 'AWS_USER_POOL_REGION', None),
+            user_pool_region=getattr(settings, 'AWS_REGION', None),
             username=username)
 
         try:
@@ -153,7 +153,7 @@ class CognitoBackend(AbstractCognitoBackend):
             settings.COGNITO_APP_ID,
             access_key=getattr(settings, 'AWS_ACCESS_KEY_ID', None),
             secret_key=getattr(settings, 'AWS_SECRET_ACCESS_KEY', None),
-            user_pool_region=getattr(settings, 'AWS_USER_POOL_REGION', None),
+            user_pool_region=getattr(settings, 'AWS_REGION', None),
             username=username)
         cognito_user.confirm_sign_up(confirmation_code,
                                      username=username)

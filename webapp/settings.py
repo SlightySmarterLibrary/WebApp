@@ -34,18 +34,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend'
 ]
 
-# COGNITO_TEST_USERNAME = env('COGNITO_TEST_USERNAME')
-
-# COGNITO_TEST_PASSWORD = env('COGNITO_TEST_PASSWORD')
-
-COGNITO_USER_POOL_ID = 'us-east-1_iEH4RmqcS'  # env('COGNITO_USER_POOL_ID')
-
-COGNITO_APP_ID = 'qvbbd49703jjk2i9rq5p4fi8l'  # env('COGNITO_APP_ID')
-
-AWS_REGION_NAME = 'us-east-1'
-
-COGNITO_IDENTITY_POOL_ID = 'us-east-1:11e1425d-1419-48ba-a158-d19644921993'
-
 DYNAMODB_BOOKS = 'SSL-Books'
 
 COGNITO_ATTR_MAPPING = env(
@@ -163,10 +151,15 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 AWS_ACCESS_KEY_ID = 'ASIAT6STUTTCKF62F4O3'
 AWS_SECRET_ACCESS_KEY = '2bQzkdeQycyBy04NnJFGaCu3E52hlKl7T07KQ8AT'
-AWS_USER_POOL_REGION = 'us-east-1'
+AWS_REGION = 'us-east-1'
 COGNITO_NAME = 'smartlibrary'
 
-cognito = boto3.client('cognito-idp', region_name=AWS_USER_POOL_REGION)
+# ================================================================
+# This section automatically loads user cognito information for user pool
+# and identity pools on AWS. The entry point for this is the `COGNITO_NAME`
+# defined above that is the name for the congito pool, cognito client, and identify pool.
+
+cognito = boto3.client('cognito-idp', region_name=AWS_REGION)
 
 # Load the UserPool ID for the smart library.
 for user_pool in cognito.list_user_pools(MaxResults=5)['UserPools']:
@@ -181,7 +174,7 @@ for client in cognito.list_user_pool_clients(UserPoolId=user_pool_id, MaxResults
 
 # Load IdentifyPoolId for the Smart Library
 cognito_identity = boto3.client(
-    'cognito-identity', region_name=AWS_USER_POOL_REGION)
+    'cognito-identity', region_name=AWS_REGION)
 
 for pool in cognito_identity.list_identity_pools(MaxResults=10)['IdentityPools']:
     if pool['IdentityPoolName'] == COGNITO_NAME:
@@ -191,3 +184,5 @@ for pool in cognito_identity.list_identity_pools(MaxResults=10)['IdentityPools']
 COGNITO_IDENTITY_POOL = identity_pool_id
 COGNITO_USER_POOL_ID = user_pool_id
 COGNITO_APP_ID = user_client_id
+
+# ================================================================
