@@ -41,6 +41,12 @@ COGNITO_USER_POOL_ID = 'us-east-1_iEH4RmqcS' # env('COGNITO_USER_POOL_ID')
 
 COGNITO_APP_ID = 'qvbbd49703jjk2i9rq5p4fi8l' # env('COGNITO_APP_ID')
 
+AWS_REGION_NAME = 'us-east-1'
+
+COGNITO_IDENTITY_POOL_ID = 'us-east-1:11e1425d-1419-48ba-a158-d19644921993'
+
+DYNAMODB_BOOKS = 'SSL-Books'
+
 COGNITO_ATTR_MAPPING = env(
     'COGNITO_ATTR_MAPPING',
     {
@@ -61,6 +67,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'library',
     'djwarrant',
     'crispy_forms',
     'django_extensions'

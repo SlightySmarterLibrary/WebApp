@@ -10,10 +10,14 @@ from django.views.generic import FormView, TemplateView
 from django.contrib import messages
 from django.contrib.auth.views import LogoutView as DJLogoutView
 from django.conf import settings
+from django.shortcuts import render
 
 from djwarrant.utils import get_cognito
 from djwarrant.forms import ProfileForm
 
+from ..forms import SignUpForm
+
+from warrant import Cognito
 
 class TokenMixin(AccessMixin):
 
@@ -64,3 +68,22 @@ class LogoutView(DJLogoutView):
         request.session.delete()
         return super(LogoutView, self).dispatch(request, *args, **kwargs)
 
+
+class SignUpView(FormView):
+    template_name = 'warrant/signup.html'
+    form_class = SignUpForm
+
+    def get_success_url(self):
+        return reverse_lazy('dw:login')
+
+    def form_valid(self, form):
+        username = form.cleaned_data.pop('username')
+        password = form.cleaned_data.pop('password1')
+        del form.cleaned_data['password2']
+        form.cleaned_data['given_name'] = form.cleaned_data.pop('first_name')
+        form.cleaned_data['family_name'] = form.cleaned_data.pop('last_name')
+        c = Cognito(settings.COGNITO_USER_POOL_ID, settings.COGNITO_APP_ID)
+        c.add_base_attributes(**form.cleaned_data)
+        c.register(username, password)
+        messages.success(self.request, 'You have successfully signed up.')
+        return super(SignUpView, self).form_valid(form)
