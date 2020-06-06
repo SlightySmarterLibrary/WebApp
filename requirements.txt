@@ -2,7 +2,7 @@ boto3==1.13.5
 botocore==1.16.5
 certifi==2020.4.5.1
 chardet==3.0.4
-Django==2.1.1
+Django==2.2.13
 django-braces==1.14.0
 django-crispy-forms==1.9.1
 django-extensions==2.2.9
